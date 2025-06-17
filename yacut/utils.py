@@ -21,7 +21,7 @@ def get_unique_short_id():
 def create_url_map(original_url, custom_id=None):
     # Импорт модели для избежания циклического импорта
     from .models import URLMap
-    
+
     url_map = URLMap()
     url_map.original = original_url
     url_map.short = custom_id if custom_id else get_unique_short_id()
