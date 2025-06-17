@@ -5,7 +5,7 @@ from yacut import app, db
 
 from .error_handlers import InvalidAPIUsage
 from .models import URLMap
-from .constants import MAX_SHORT_URL_LENGTH
+from .constants import MAX_SHORT_URL_LENGTH, ErrorMessage
 from .views import create_url_map
 
 
@@ -21,24 +21,24 @@ def get_short_url(short_url):
 def create_short_url():
     data = request.get_json(silent=True)
     if not data:
-        raise InvalidAPIUsage('Отсутствует тело запроса')
+        raise InvalidAPIUsage(ErrorMessage.EMPTY_REQUEST)
 
     if 'url' not in data:
-        raise InvalidAPIUsage('"url" является обязательным полем!')
+        raise InvalidAPIUsage(ErrorMessage.MISSING_URL)
 
     custom_id = data.get('custom_id')
     if custom_id:
         if len(custom_id) > MAX_SHORT_URL_LENGTH:
             raise InvalidAPIUsage(
-                'Указано недопустимое имя для короткой ссылки'
+                ErrorMessage.INVALID_SHORT_URL
             )
         if not re.match(r'^[a-zA-Z0-9]+$', custom_id):
             raise InvalidAPIUsage(
-                'Указано недопустимое имя для короткой ссылки'
+                ErrorMessage.INVALID_SHORT_URL
             )
         if URLMap.query.filter_by(short=custom_id).first():
             raise InvalidAPIUsage(
-                'Предложенный вариант короткой ссылки уже существует.'
+                ErrorMessage.SHORT_URL_ALREADY_EXISTS
             )
 
     url_map = create_url_map(data['url'], custom_id)
