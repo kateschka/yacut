@@ -1,9 +1,11 @@
 import re
+from http import HTTPStatus
 from flask import jsonify, request
 from yacut import app, db
 
 from .error_handlers import InvalidAPIUsage
 from .models import URLMap
+from .constants import MAX_SHORT_URL_LENGTH
 from .views import create_url_map
 
 
@@ -11,9 +13,8 @@ from .views import create_url_map
 def get_short_url(short_url):
     url_map = URLMap.query.filter_by(short=short_url).first()
     if url_map:
-        return jsonify({'url': url_map.original}), 200
-    else:
-        raise InvalidAPIUsage('Указанный id не найден', 404)
+        return jsonify({'url': url_map.original}), HTTPStatus.OK
+    raise InvalidAPIUsage('Указанный id не найден', HTTPStatus.NOT_FOUND)
 
 
 @app.route('/api/id/', methods=['POST'])
@@ -27,7 +28,7 @@ def create_short_url():
 
     custom_id = data.get('custom_id')
     if custom_id:
-        if len(custom_id) > 16:
+        if len(custom_id) > MAX_SHORT_URL_LENGTH:
             raise InvalidAPIUsage(
                 'Указано недопустимое имя для короткой ссылки'
             )
@@ -43,4 +44,4 @@ def create_short_url():
     url_map = create_url_map(data['url'], custom_id)
     db.session.add(url_map)
     db.session.commit()
-    return jsonify(url_map.to_dict()), 201
+    return jsonify(url_map.to_dict()), HTTPStatus.CREATED

@@ -1,10 +1,12 @@
 import re
+from http import HTTPStatus
 from flask import flash, redirect, render_template
 from yacut import app, db
 
 from .models import URLMap
 from .forms import URLForm
 from .utils import create_url_map
+from .constants import MAX_SHORT_URL_LENGTH
 
 
 @app.route('/')
@@ -25,7 +27,7 @@ def create_id():
                     'custom_id_error'
                 )
                 return render_template('main.html', form=form)
-            if len(short_url) > 16:
+            if len(short_url) > MAX_SHORT_URL_LENGTH:
                 flash(
                     'Указано недопустимое имя для короткой ссылки',
                     'custom_id_error'
@@ -48,4 +50,4 @@ def create_id():
 @app.route('/<string:short_url>')
 def get_url(short_url):
     url_map = URLMap.query.filter_by(short=short_url).first_or_404()
-    return redirect(url_map.original), 302
+    return redirect(url_map.original), HTTPStatus.FOUND
