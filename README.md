@@ -36,13 +36,13 @@ python3 -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 5. Инициализация базы данных
+### Инициализация базы данных
 
 ```sh
 flask db upgrade
 ```
 
-### 6. Запуск приложения
+### Запуск приложения
 
 ```sh
 flask run
