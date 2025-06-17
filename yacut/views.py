@@ -6,7 +6,7 @@ from yacut import app, db
 from .models import URLMap
 from .forms import URLForm
 from .utils import create_url_map
-from .constants import MAX_SHORT_URL_LENGTH, ErrorMessage
+from .constants import MAX_SHORT_URL_LENGTH, ErrorMessage, ErrorCategory
 
 
 @app.route('/')
@@ -24,19 +24,19 @@ def create_id():
             if not re.match(r'^[a-zA-Z0-9]+$', short_url):
                 flash(
                     ErrorMessage.INVALID_SHORT_URL,
-                    'custom_id_error'
+                    ErrorCategory.CUSTOM_ID_ERROR
                 )
                 return render_template('main.html', form=form)
             if len(short_url) > MAX_SHORT_URL_LENGTH:
                 flash(
                     ErrorMessage.INVALID_SHORT_URL,
-                    'custom_id_error'
+                    ErrorCategory.CUSTOM_ID_ERROR
                 )
                 return render_template('main.html', form=form)
             if URLMap.query.filter_by(short=short_url).first():
                 flash(
                     ErrorMessage.SHORT_URL_ALREADY_EXISTS,
-                    'custom_id_error'
+                    ErrorCategory.CUSTOM_ID_ERROR
                 )
                 return render_template('main.html', form=form)
 

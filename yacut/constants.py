@@ -16,3 +16,7 @@ class ErrorMessage:
     SHORT_URL_ALREADY_EXISTS = (
         'Предложенный вариант короткой ссылки уже существует.'
     )
+
+
+class ErrorCategory:
+    CUSTOM_ID_ERROR = 'custom_id_error'
